@@ -8,8 +8,14 @@
             "iso_url": "http://centos.openitc.uk/7.0.1406/isos/x86_64/CentOS-7.0-1406-x86_64-Minimal.iso",
             "ssh_username": "vagrant",
             "ssh_password": "vagrant",
-            "disk_size": 20480,
-            "shutdown_command": "sudo -S shutdown -P now"
+            "disk_size": 8192,
+            "shutdown_command": "sudo -S shutdown -P now",
+            "http_directory": "http",
+            "boot_command": [
+                "<wait><esc><esc>",
+                "linux ks=http://{{.HTTPIP}}:{{.HTTPPort}}/ks.cf<enter>"
+            ]
         }
-    ]
+    ],
+    "post-processors":["vagrant"]
 }
