@@ -13,14 +13,14 @@
             "http_directory": "http",
             "boot_command": [
                 "<wait><esc><esc>",
-                "linux ks=http://{{.HTTPIP}}:{{.HTTPPort}}/ks-01.cf<enter>"
+                "linux ks=http://{{.HTTPIP}}:{{.HTTPPort}}/ks.cf<enter>"
             ]
         }
     ],
     "provisioners":[
         {
-            "type": "shell",
-            "script": "scripts/Centos7-setup.sh"
+            "type": "chef-solo",
+            
         }
     ],
     "post-processors":["vagrant"]

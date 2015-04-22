@@ -1,0 +1,30 @@
+install
+text
+cdrom
+lang en_GB.UTF-8
+keyboard gb
+timezone Europe/London
+auth --enableshadow --passalgo=sha512
+network  --onboot yes --bootproto=dhcp --noipv6 --hostname=centos7.localdomain
+user --name=vagrant --plaintext --password=vagrant --groups=vagrant
+rootpw vagrant
+zerombr
+bootloader --location=mbr
+autopart
+clearpart --all --initlabel 
+firewall --disabled
+selinux --permissive
+firstboot --disabled
+eula --agreed
+skipx
+reboot
+
+services --enabled=NetworkManager,sshd,ntpd
+
+%packages --ignoremissing --excludedocs
+@base
+@core
+@Development Tools
+openssh-server
+
+%end

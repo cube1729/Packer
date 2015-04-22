@@ -1,14 +1,7 @@
 ##!/bin/bash
 
-#Identify network interface
-ifc=`ls /etc/sysconfig/network-scripts/ifcfg-* | grep -v '\ifcfg-lo'`
-
-#Backup network config
-#cp $ifc $ifc.bak
-
-#Edit network config
-sed -i "s/ONBOOT=no/ONBOOT=yes/" "$ifc"
-sed -i "/^HARDW/d" "$ifc"
+#Remove HARDW address from ifcfg file
+sed -i "/^HARDW/d" /etc/sysconfig/network-scripts/ifcfg-enp0s3
 
 #Restart networking
 systemctl restart network.service
@@ -21,26 +14,16 @@ yum upgrade -y
 yum install -y openssh-server ntp git gcc kernel-devel make wget bzip2 net-tools httpd
 
 #Enable services
-systemctl enable sshd.service
 systemctl enable ntpd.service
-systemctl enable httpd.service 
+systemctl enable httpd.service
 
-#Disable iptables - For testing
-systemctl disable iptables.service && systemctl disable ip6tables.service
-
-#Change Selinux to Permissive
-sed -i "s/^SELINUX=.*/SELINUX=permissive/" /etc/selinux/config
-
-#Create vagrant user and set password
-useradd -m vagrant
-echo vagrant | passwd vagrant --stdin
 
 #Add vagrant to sudoers and remove requiretty
 sed -i "s/^\(Defaults.*requiretty\)/#\1/" /etc/sudoers
 echo "vagrant ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 #Creare SSH directory and place vagrant keys
-mkdir /home/vagrant.ssh
+mkdir /home/vagrant/.ssh
 curl https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub >> /home/vagrant/.ssh/authorized_keys
 
 #Change SSH directory owner and permissions
@@ -48,8 +31,9 @@ chmod 600 /homs/vagrant/.ssh/autorized_keys
 chown -R vagrant:vagrant /home/vagrant/.ssh
 
 #Cleanup
-#rm -rf /tmp/*
-#yum clean all && history -c
+rm -rf /tmp/*
+yum clean all
+history -c
 
 #Shutdown
-shutdown -r now
+#shutdown -r now

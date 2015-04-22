@@ -1,35 +1,31 @@
 install
 text
 cdrom
-
 lang en_GB.UTF-8
 keyboard gb
-timezone Europe/London --isUtc
-
+timezone Europe/London
 auth --enableshadow --passalgo=sha512
-
-network  --bootproto=dhcp --device=eth0 --noipv6 --activate --hostname=centos7.localdomain
-
+network  --onboot yes --bootproto=dhcp --noipv6 --hostname=centos7.localdomain
+user --name=vagrant --plaintext --password=vagrant --groups=vagrant
 rootpw vagrant
-
 zerombr
-bootloader --location=mbr --boot-drive=sda
-autopart --type=lvm
+bootloader --location=mbr
+autopart
 clearpart --all --initlabel 
-
 firewall --disabled
 selinux --permissive
-
 firstboot --disabled
 eula --agreed
 skipx
-
 reboot
+
+services --enabled=NetworkManager,sshd,ntpd
 
 %packages --ignoremissing --excludedocs
 @base
 @core
 @Development Tools
+openssh-server
 
 %end
 
@@ -39,20 +35,19 @@ reboot
 yum update -y
 yum upgrade -y
 
-# Applications
-yum install -y openssh-server ntp git gcc kernel-devel make wget bzip2 net-tools curl vim
+sed -i "/^HARDW/d" /etc/sysconfig/network-scripts/ifcfg-enp0s3
 
-# Services    
-systemctl enable sshd.service
-systemctl enable ntpd.service
+# Applications
+yum install -y ntp git gcc kernel-devel make wget bzip2 net-tools curl vim
 
 # Vagrant User
-useradd -m vagrant && echo vagrant | passwd vagrant --stdin
 sed -i "s/^\(Defaults.*requiretty\)/#\1/" /etc/sudoers
 echo "vagrant  ALL=(ALL)  NOPASSWD: ALL" >> /etc/sudoers
-mkdir /home/vagrant.ssh
+
+mkdir /home/vagrant/.ssh
 curl https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub >> /home/vagrant/.ssh/authorized_keys
-chmod 600 /home/vagrant/.ssh/autorized_keys && chown -R vagrant:vagrant /home/vagrant/.ssh
+chmod 600 /home/vagrant/.ssh/autorized_keys 
+chown -R vagrant:vagrant /home/vagrant/.ssh
 
 # Clean Up
 rm -rf /tmp/*
