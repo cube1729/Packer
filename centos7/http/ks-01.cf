@@ -28,3 +28,10 @@ services --enabled=NetworkManager,sshd,ntpd
 openssh-server
 
 %end
+
+%post
+
+sed -i "s/^\(Defaults.*requiretty\)/#\1/" /etc/sudoers
+echo "vagrant  ALL=(ALL)  NOPASSWD: ALL" >> /etc/sudoers
+
+%end

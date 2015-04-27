@@ -1,8 +1,7 @@
 ##!/bin/bash
-
-#Create mount 
-mkdir /media/cdrom
-mount /dev/cdrom /media/cdrom
-
-#Install guest additions
-sudo ./media/cdrom/VBoxLinuxAdditions.run 
+vbox=$(cat /home/vagrant/.vbox_version)
+cd /tmp
+mount -o loop /home/vagrant/VBoxGuestAdditions_$vbox.iso /mnt
+sudo ./mnt/VBoxLinuxAdditions.run
+umount /mnt
+rm -rf /home/vagrant/VBoxGuestAdditions_*.iso
